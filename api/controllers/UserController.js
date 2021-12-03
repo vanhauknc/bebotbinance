@@ -63,25 +63,65 @@ module.exports = function (app) {
 
         let user = await User.findOne({ email: data.email });
         if (!user) {
-            res.json({
+            return res.json({
                 status: false,
                 message: "Tài khoản không tồn tại !"
             })
         }
         const flagCheckPass = bcrypt.compareSync(data.password, user.password);
         if (!flagCheckPass) {
-            res.json({
+            return res.json({
                 status: false,
                 message: "Mật khẩu không đúng !"
             })
         }
         let payload = { _id, name,email } = user;
         var token = jwt.sign({ payload }, process.env.KEY_PASSWORD, { expiresIn: '1h' });
-        res.json({
+        return res.json({
             status: true,
             message : "Đăng nhập thành công",
-            token: token
+            data : {
+                _id : user.id,
+                name : user.name,
+                email : user.email,
+                token: token
+            }
+            
         })
+    })
+    app.post('/api/changepass',verifyToken,async (req,res)=>{
+        const {password,newpassword,repassword} = req.body;
+        if (Object.keys(req.body).length === 0) {
+            return res.json({
+                status:false,
+                message : 'Error Params'
+            })
+         }
+        if(newpassword != repassword)
+        {
+            return res.json({
+                status: false,
+                message : "Mật khẩu xác thực không chính xác",
+                data:''
+            })
+        }
+        if(bcrypt.compareSync(password,req.user.password))
+        {
+            const hashPass = bcrypt.hashSync(newpassword, salt)
+            let rs = await User.findByIdAndUpdate(req.user._id,{password : hashPass})
+            return res.json({
+                status : true,
+                message : "Đổi mật khẩu thành công",
+                data : ""
+            })
+        }else{
+            //sai pass
+            return res.json({
+                status : false,
+                message : "Mật khẩu cũ không chính xác",
+                data : ""
+            })
+        }
     })
 
 }

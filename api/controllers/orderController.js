@@ -18,7 +18,7 @@ module.exports = function (app) {
         getOrder(res);
     });
 
-    app.get("/api/order/:id", (req, res) => {
+    app.get("/api/order/:id",verifyToken, (req, res) => {
         Order.findById({ _id: req.params.id }, (err, result) => {
             if (err) {
                 res.send(err)

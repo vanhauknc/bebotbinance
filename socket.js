@@ -37,30 +37,35 @@ server.listen(process.env.PORT_SOCKET || 5555, () => {
 async function getListCoinValues() {
   console.log("Start getListCoinValues")
   while (true) {
-    const fetchAll = await binance.fetchTickers();
-    let obj = Object.values(fetchAll)
-    let tempArray = [];
-    obj.map(data => {
-      if (data.symbol.substr(data.symbol.length - 4, 4) == 'USDT') {
-        tempArray.push(data)
+    try{
+      const fetchAll = await binance.fetchTickers();
+      let obj = Object.values(fetchAll)
+      let tempArray = [];
+      obj.map(data => {
+        if (data.symbol.substr(data.symbol.length - 4, 4) == 'USDT') {
+          tempArray.push(data)
+        }
+      })
+  
+  
+      let ArrayReturn = [];
+      let ArraySort = [];
+      ArraySort = _.orderBy(tempArray, ['quoteVolume'], ['desc']);
+  
+      for (let i = 0; i < 56; i++) {
+        let objTemp = {
+          symbol: ArraySort[i].symbol,
+          percentage: ArraySort[i].percentage,
+          close: ArraySort[i].close
+        }
+        ArrayReturn.push(objTemp);
       }
-    })
-
-
-    let ArrayReturn = [];
-    let ArraySort = [];
-    ArraySort = _.orderBy(tempArray, ['quoteVolume'], ['desc']);
-
-    for (let i = 0; i < 56; i++) {
-      let objTemp = {
-        symbol: ArraySort[i].symbol,
-        percentage: ArraySort[i].percentage,
-        close: ArraySort[i].close
-      }
-      ArrayReturn.push(objTemp);
+      io.emit('get-data',ArrayReturn)
+      await delay(1000);
+    }catch(ex){
+      console.log("While Error",ex)
     }
-    io.emit('get-data',ArrayReturn)
-    await delay(1000);
+   
 
   }
 }
