@@ -28,7 +28,10 @@ async function RunWhile() {
     console.log("Run While")
     const listOrder = await Order.find({ status: 'A' });
     // var listOrder = [];
-
+    if(listOrder.length == 0)
+    {
+        return
+    }
     if (listOrder.length > 10) {
 
         let ArrayTemp = [];
