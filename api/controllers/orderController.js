@@ -14,8 +14,13 @@ function getOrder(res) {
 }
 module.exports = function (app) {
 
-    app.get("/api/orders",verifyToken, (req, res) => {
-        getOrder(res);
+    app.get("/api/orders",verifyToken,async (req, res) => {
+        //getOrder(res);
+        let results = await Order.find({user_id:req.user._id});
+        res.json({
+            status:true,
+            data:results
+        })
     });
 
     app.get("/api/order/:id",verifyToken, (req, res) => {
@@ -30,6 +35,7 @@ module.exports = function (app) {
 
     app.post("/api/order",verifyToken, async function (req, res) {
         let data = req.body;
+        data.user_id = req.user._id;
         const type = await GetCurrentPriceService.checkType(data.priceflag,data.imtcode);
         data.type = type;
         Order.create(data, function (err, order) {
