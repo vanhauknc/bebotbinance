@@ -25,7 +25,7 @@ const sendMess = (chatID, order) => {
 }
 
 async function RunWhile() {
-    console.log("Run While")
+   // console.log("Run While")
     const listOrder = await Order.find({ status: 'A' });
     // var listOrder = [];
     if(listOrder.length == 0)
@@ -110,7 +110,7 @@ async function RunWhile() {
 }
 
 const main = async () => {
-
+console.log("Run.........")
     while (true) {
         //user_id,id_chat,Tokenbot
         RunWhile();
