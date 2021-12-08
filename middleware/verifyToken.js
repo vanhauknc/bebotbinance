@@ -4,7 +4,7 @@ var verifyToken = (req,res,next)=>{
     if(!req.headers['authorization']){
         return res.json({
             status:false,
-            message : 'Token Error'
+            message : 'Token Wrong'
         })
     } 
     const authHeader = req.headers['authorization'];

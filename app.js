@@ -9,6 +9,7 @@ require('dotenv').config();
 var orderController =  require('./api/controllers/orderController');
 const imtController = require('./api/controllers/imtController');
 const UserController = require('./api/controllers/UserController')
+const TelegramController =  require('./api/controllers/TelegramController');
 const verifyToken = require('./middleware/verifyToken')
 
 var app = express();
@@ -34,6 +35,7 @@ mongoose.connect(config.getDBConnectionString());
 orderController(app);
 imtController(app);
 UserController(app);
+TelegramController(app);
 
 
 app.get("/",verifyToken,function(req,res){

@@ -51,9 +51,9 @@ async function RunWhile() {
 
             results.forEach(result => {
                 if (result.status) {
-                    // Xu ly cat o day
-                    // thong bao qua telegram
-                    sendMess('1118912333', result);
+                    // Xu ly cat o day 1118912333
+                    // thong bao qua telegram -615110083
+                    sendMess('2088107774', result);
                     const { data } = result;
                     if (data.p_status == '1') {
                         // cat 1 lan 
