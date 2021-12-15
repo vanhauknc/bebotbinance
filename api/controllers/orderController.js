@@ -1,6 +1,8 @@
 var Order = require('../models/Order')
 var GetCurrentPriceService = require('./../../Service/GetCurrentPriceService')
 const verifyToken = require('../../middleware/verifyToken')
+const OrderLog = require('../models/OrderLog')
+
 function getOrder(res) {
     Order.find({}).sort({ createdAt: 'desc' }).exec((err, order) => {
         if (err) {
@@ -96,6 +98,14 @@ module.exports = function (app) {
 
         }
     })
+
+    app.get("/api/orderhistory",verifyToken,async (req,res)=>{
+        const OrderLogs = await OrderLog.find({user_id:req.user._id}).sort({createdAt:'desc'});
+        res.send({
+            status:true,
+            data:OrderLogs
+        })
+    } )
 
     app.get("/api/test",async(req,res)=>{
         let type = await GetCurrentPriceService.checkType('500','BNB/USDT')

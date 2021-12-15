@@ -5,15 +5,20 @@ var GetCurrentPriceService = require('../Service/GetCurrentPriceService')
 const TelegramBot = require('node-telegram-bot-api');
 const delay = require('delay');
 var OrderLog = require('../api/models/OrderLog');
+const TelegramModel = require('../api/models/Telegram')
 
 mongoose.connect(config.getDBConnectionString());
-const token = '2088107774:AAGDODGmGia8TxwZHaeWfyu6LGXK1JOPYRQ';
-const bot = new TelegramBot(token, { polling: false });
 
 
-const sendMess = (chatID, order) => {
+
+const sendMess = async (order) => {
+    const telegramInfo = await TelegramModel.findOne({user_id:order.data.user_id});
+    if(!telegramInfo){
+        return;
+    }
+    const bot = new TelegramBot(telegramInfo.token, { polling: false });
     //1118912333
-    bot.sendMessage(chatID, order.message);
+    bot.sendMessage(telegramInfo.chat_id, order.message);
     OrderLog.create({ user_id: order.data.user_id, log: order.message }, (err, rs) => {
         if (err) {
             console.log(err)
@@ -53,7 +58,7 @@ async function RunWhile() {
                 if (result.status) {
                     // Xu ly cat o day 1118912333
                     // thong bao qua telegram -615110083
-                    sendMess('2088107774', result);
+                    sendMess(result);
                     const { data } = result;
                     if (data.p_status == '1') {
                         // cat 1 lan 
@@ -89,7 +94,7 @@ async function RunWhile() {
             if (result.status) {
                 // Xu ly cat o day
                 // thong bao qua telegram
-                sendMess('1118912333', result);
+                sendMess(result);
                 const { data } = result;
                 if (data.p_status == '1') {
                     // cat 1 lan 
